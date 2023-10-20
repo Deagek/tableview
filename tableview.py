@@ -9,7 +9,7 @@ label_dict = {}
 min_widths = []
 sorting_orders = {}
 header_list=[]
-
+clear_canvas=[]
 
 def on_double_click(event, index):
     canvas = canvas_list[index]
@@ -74,6 +74,7 @@ def setup_columns(root,window,column_headers, column_widths, table_height, frame
 
     - tableview.clear(): clears table
     - tableview.remove_highlight(column, row): Removes the highlight from a cell at the designated coordinates
+    - tableview.return_all(): Returns all values in the table
     
     - custom colours - create dict per below:\n
         table_color_map = {
@@ -93,6 +94,7 @@ def setup_columns(root,window,column_headers, column_widths, table_height, frame
     """
 
     global header_background, header_foreground, tree_background, tree_foreground, item_foreground, tree_erase_background, selected_row_bg_color, selected_row_text_color #colours
+    global canvas, hsb, h_canvas, columns, max_widths, max_item_widths, row_indices, column_data, frame, frame_columns, main_canvas
     
     if table_color_map==None:
         table_color_map = {
@@ -124,9 +126,6 @@ def setup_columns(root,window,column_headers, column_widths, table_height, frame
    
     if header_font==None or header_font=='':
         header_font=('Calibri bold',12)
-
-    global canvas, hsb, h_canvas, columns, max_widths, max_item_widths, row_indices, column_data, frame, frame_columns, main_canvas
-    
 
     if len(column_headers) != len(column_widths):
         raise ValueError("The number of column headers must match the number of column widths.")
@@ -386,10 +385,7 @@ def highlight_row(event):
                         font=label_dict.get((c, row)).cget('font')
                         label_dict.get((c, row)).configure(background=selected_row_bg_color, foreground=selected_row_text_color, font=font)
                         exclude_row=row
-                          
-                        
-                        
-                                
+                                             
                         for cells in highlighted_cells:
                             if row == cells[1] and c == cells[0]-1:
                                 font=label_dict.get((c, row)).cget('font')
@@ -435,7 +431,7 @@ def insert_item(column, text, bind=None, font=None):
     label.pack(fill='both', expand=True, padx=0)  
     label.bind('<ButtonRelease-1>', highlight_row)
     label.bind("<Double-1>",lambda event, bind=bind: on_double(event, bind))
-    
+    clear_canvas.append(canvas)
     item_width = label.winfo_reqwidth()
     max_item_widths[column] = item_width
     label_dict[(column, row)]=label
@@ -454,6 +450,15 @@ def clear():
     for column, frame in item_frame_list:
         frame.destroy()
     item_frame_list.clear()
+
+def return_all():
+    all_values = []  # Create a list to store all values
+    for (col, row), label in label_dict.items():
+        row_values = []  # Create a list to store values for a specific row
+        for c in range(columns):
+            row_values.append(label_dict.get((c, row)).cget('text'))
+        all_values.append(row_values)  # Append the row values to the list of all values
+    return all_values
 
 
 def pack():#insert blank items
