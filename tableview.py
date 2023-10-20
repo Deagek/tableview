@@ -444,11 +444,16 @@ def insert_item(column, text, bind=None, font=None):
     label.update()
 
 def clear():
-        global row_indices, column_data, label_dict
+    global row_indices, column_data, label_dict, highlighted_cells
 
-        row_indices = [0] * columns  # Initialize row indices for each column
-        column_data = [[] for _ in range(columns)] #reinit 
-        label_dict.clear()
+    row_indices = [0] * columns  # Initialize row indices for each column
+    column_data = [[] for _ in range(columns)] #reinit 
+    label_dict.clear()
+    highlighted_cells=[]
+
+    for column, frame in item_frame_list:
+        frame.destroy()
+    item_frame_list.clear()
 
 
 def pack():#insert blank items
